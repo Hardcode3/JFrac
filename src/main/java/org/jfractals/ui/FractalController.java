@@ -11,6 +11,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.control.Label;
 import org.jfractals.model.FractalSettings;
 import org.jfractals.render.FractalRenderService;
 import org.jfractals.render.FractalRenderer;
@@ -29,6 +30,7 @@ public final class FractalController implements AutoCloseable {
 
     @FXML private StackPane fractalPane;
     @FXML private ImageView fractalImageView;
+    @FXML private Label coordinateInfoLabel;
 
     /** Mutable model containing the current rendering and fractal parameters. */
     private final FractalSettings settings = new FractalSettings();
@@ -72,6 +74,15 @@ public final class FractalController implements AutoCloseable {
         });
         fractalPane.setOnMouseReleased(event -> finishPan(event.getX(), event.getY()));
         fractalPane.setOnScroll(event -> zoomAt(event.getX(), event.getY(), event.getDeltaY()));
+
+        updateInfoLabels();
+    }
+
+    public void updateInfoLabels() {
+        if (coordinateInfoLabel == null) return;
+        double zoomFactor = INITIAL_VIEW_HEIGHT / viewHeight;
+        String text = String.format("Zoom: %.2fx \t Center: %.6f %+.6fi", zoomFactor, centerX, centerY);
+        coordinateInfoLabel.setText(text);
     }
 
     /**
@@ -200,7 +211,7 @@ public final class FractalController implements AutoCloseable {
         if (width <= 0 || height <= 0) {
             return;
         }
-
+        updateInfoLabels();
         renderService.render(width, height, viewHeight, centerX, centerY, settings.snapshot(),
                 fractalImageView::setImage);
     }

@@ -5,24 +5,26 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.jfractals.ui.FractalController;
-
 import java.io.IOException;
+import java.net.URL;
+import org.jfractals.ui.FractalController;
 
 /** Creates and owns the primary application window. */
 public final class JFractalsApplication extends Application {
     private static final double INITIAL_WIDTH = 1280;
     private static final double INITIAL_HEIGHT = 720;
+    private static final String TITLE = "JFractals";
 
     private FractalController fractalController;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(JFractalsApplication.class.getResource("/org/jfractals/ui/fractal-view.fxml"));
+        URL resource = getClass().getResource("/org/jfractals/ui/fractal-view.fxml");
+        FXMLLoader loader = new FXMLLoader(resource);
         Parent root = loader.load();
         fractalController = loader.getController();
 
-        primaryStage.setTitle("JFractals");
+        primaryStage.setTitle(TITLE);
         Scene scene = new Scene(root, INITIAL_WIDTH, INITIAL_HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.setOnShown(event -> fractalController.onViewReady(scene));

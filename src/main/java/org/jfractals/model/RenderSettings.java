@@ -2,7 +2,10 @@ package org.jfractals.model;
 
 import java.util.Objects;
 
-/** Immutable snapshot of the parameters needed for one render. */
+/**
+ * Immutable snapshot of the parameters needed for one render.
+ * The mutable version of this class lays in org.jfractals.model.FractalSettings.
+ * */
 public record RenderSettings(
         FractalType type,
         int maxIterations,

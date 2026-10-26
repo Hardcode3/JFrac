@@ -11,7 +11,10 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-/** Mutable JavaFX model for the settings edited by the user. */
+/**
+ * Mutable JavaFX model for the settings edited by the user.
+ * Immutable version of this class lays in org.jfractals.model.RenderSettings.
+ * */
 public final class FractalSettings {
     private final ObjectProperty<FractalType> type = new SimpleObjectProperty<>(this, "type", FractalType.MANDELBROT);
     private final IntegerProperty maxIterations = new SimpleIntegerProperty(this, "maxIterations", 18);
@@ -115,7 +118,7 @@ public final class FractalSettings {
         }
     }
 
-    /** Copies UI state into an immutable value safe to pass to a renderer. */
+    /** Copies UI state into an immutable value (thread) safe to pass to a renderer. */
     public RenderSettings snapshot() {
         return new RenderSettings(getType(), getMaxIterations(), getEscapeRadius(), isSmooth(),
                 getExponent(), getJuliaReal(), getJuliaImag());

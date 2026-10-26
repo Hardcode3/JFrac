@@ -5,6 +5,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import org.jfractals.model.ComputeBackend;
 import org.jfractals.model.FractalSettings;
 import org.jfractals.model.FractalType;
 
@@ -13,6 +14,7 @@ import java.util.function.Predicate;
 /** Binds the settings form to the application's shared settings model. */
 public final class SettingsController {
     @FXML private ComboBox<FractalType> typeChoice;
+    @FXML private ComboBox<ComputeBackend> backendChoice;
     @FXML private Spinner<Integer> maxIterationsSpinner;
     @FXML private Spinner<Double> escapeRadiusSpinner;
     @FXML private CheckBox smoothCheckBox;
@@ -23,6 +25,7 @@ public final class SettingsController {
     @FXML
     private void initialize() {
         typeChoice.getItems().setAll(FractalType.values());
+        backendChoice.getItems().setAll(ComputeBackend.values());
         maxIterationsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10000, 18));
         escapeRadiusSpinner.setValueFactory(doubleFactory(2.0, 0.1, 1000.0, 0.1));
         exponentSpinner.setValueFactory(doubleFactory(2.0, 0.1, 16.0, 0.1));
@@ -47,6 +50,7 @@ public final class SettingsController {
     /** Called by the window that loads this controller. */
     public void setSettings(FractalSettings settings) {
         typeChoice.valueProperty().bindBidirectional(settings.typeProperty());
+        backendChoice.valueProperty().bindBidirectional(settings.backendProperty());
         maxIterationsSpinner.getValueFactory().valueProperty()
                 .bindBidirectional(settings.maxIterationsProperty().asObject());
         escapeRadiusSpinner.getValueFactory().valueProperty()

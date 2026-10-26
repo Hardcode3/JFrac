@@ -1,26 +1,34 @@
 package org.jfractals.ui;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.jfractals.model.ComputeBackend;
 import org.jfractals.model.FractalSettings;
 import org.jfractals.render.FractalRenderService;
 import org.jfractals.render.FractalRenderer;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 /** Handles interaction with the fractal view and coordinates rendering. */
 public final class FractalController implements AutoCloseable {
-    private static final double INITIAL_VIEW_HEIGHT = 3.5;
-    private static final double ZOOM_SPEED = 0.005;
+    private static final BigDecimal INITIAL_VIEW_HEIGHT = BigDecimal.valueOf(3.5);
+    private static final BigDecimal ZOOM_SPEED = new BigDecimal("0.005");
+    private static final MathContext CAMERA_PRECISION = new MathContext(2048, RoundingMode.HALF_EVEN);
+    private static final MathContext ZOOM_FACTOR_PRECISION = new MathContext(80, RoundingMode.HALF_EVEN);
     private static final Duration RENDER_DEBOUNCE = Duration.millis(150);
 
     @FXML private StackPane fractalPane;
@@ -32,9 +40,9 @@ public final class FractalController implements AutoCloseable {
 
     private double pressX;
     private double pressY;
-    private double centerX;
-    private double centerY;
-    private double viewHeight = INITIAL_VIEW_HEIGHT;
+    private BigDecimal centerX = BigDecimal.ZERO;
+    private BigDecimal centerY = BigDecimal.ZERO;
+    private BigDecimal viewHeight = INITIAL_VIEW_HEIGHT;
     private Stage settingsStage;
 
     @FXML
@@ -79,15 +87,18 @@ public final class FractalController implements AutoCloseable {
     private void finishPan(double x, double y) {
         double deltaX = x - pressX;
         double deltaY = y - pressY;
-        if ((deltaX == 0.0 && deltaY == 0.0) || fractalPane.getHeight() <= 0.0) {
+        double paneHeight = fractalPane.getHeight();
+        if ((deltaX == 0.0 && deltaY == 0.0) || paneHeight <= 0.0) {
             fractalImageView.setTranslateX(0.0);
             fractalImageView.setTranslateY(0.0);
             return;
         }
 
-        double unitsPerPixel = viewHeight / fractalPane.getHeight();
-        centerX -= deltaX * unitsPerPixel;
-        centerY -= deltaY * unitsPerPixel;
+        BigDecimal unitsPerPixel = viewHeight.divide(BigDecimal.valueOf(paneHeight), CAMERA_PRECISION);
+        centerX = centerX.subtract(BigDecimal.valueOf(deltaX).multiply(unitsPerPixel, CAMERA_PRECISION),
+                CAMERA_PRECISION);
+        centerY = centerY.subtract(BigDecimal.valueOf(deltaY).multiply(unitsPerPixel, CAMERA_PRECISION),
+                CAMERA_PRECISION);
         fractalImageView.setTranslateX(0.0);
         fractalImageView.setTranslateY(0.0);
         render();
@@ -100,14 +111,19 @@ public final class FractalController implements AutoCloseable {
             return;
         }
 
-        double oldUnitsPerPixel = viewHeight / height;
-        double pointX = centerX + (x - width / 2.0) * oldUnitsPerPixel;
-        double pointY = centerY + (y - height / 2.0) * oldUnitsPerPixel;
+        BigDecimal heightValue = BigDecimal.valueOf(height);
+        BigDecimal offsetX = BigDecimal.valueOf(x - width / 2.0);
+        BigDecimal offsetY = BigDecimal.valueOf(y - height / 2.0);
+        BigDecimal oldUnitsPerPixel = viewHeight.divide(heightValue, CAMERA_PRECISION);
+        BigDecimal pointX = centerX.add(offsetX.multiply(oldUnitsPerPixel, CAMERA_PRECISION), CAMERA_PRECISION);
+        BigDecimal pointY = centerY.add(offsetY.multiply(oldUnitsPerPixel, CAMERA_PRECISION), CAMERA_PRECISION);
 
-        viewHeight *= Math.exp(-deltaY * ZOOM_SPEED);
-        double newUnitsPerPixel = viewHeight / height;
-        centerX = pointX - (x - width / 2.0) * newUnitsPerPixel;
-        centerY = pointY - (y - height / 2.0) * newUnitsPerPixel;
+        BigDecimal zoomExponent = BigDecimal.valueOf(-deltaY).multiply(ZOOM_SPEED, ZOOM_FACTOR_PRECISION);
+        BigDecimal zoomFactor = BigDecimalMath.exp(zoomExponent, ZOOM_FACTOR_PRECISION);
+        viewHeight = viewHeight.multiply(zoomFactor, CAMERA_PRECISION);
+        BigDecimal newUnitsPerPixel = viewHeight.divide(heightValue, CAMERA_PRECISION);
+        centerX = pointX.subtract(offsetX.multiply(newUnitsPerPixel, CAMERA_PRECISION), CAMERA_PRECISION);
+        centerY = pointY.subtract(offsetY.multiply(newUnitsPerPixel, CAMERA_PRECISION), CAMERA_PRECISION);
         render();
     }
 
@@ -135,8 +151,8 @@ public final class FractalController implements AutoCloseable {
     }
 
     private void resetView() {
-        centerX = 0.0;
-        centerY = 0.0;
+        centerX = BigDecimal.ZERO;
+        centerY = BigDecimal.ZERO;
         viewHeight = INITIAL_VIEW_HEIGHT;
         fractalImageView.setTranslateX(0.0);
         fractalImageView.setTranslateY(0.0);
@@ -155,7 +171,17 @@ public final class FractalController implements AutoCloseable {
         }
 
         renderService.render(width, height, viewHeight, centerX, centerY, settings.snapshot(),
-                fractalImageView::setImage);
+                fractalImageView::setImage, this::handleGpuFallback);
+    }
+
+    private void handleGpuFallback(String details) {
+        settings.setBackend(ComputeBackend.CPU);
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.initOwner(fractalPane.getScene().getWindow());
+        alert.setTitle("GPU rendering fallback");
+        alert.setHeaderText("Using CPU rendering");
+        alert.setContentText(details);
+        alert.show();
     }
 
     @Override

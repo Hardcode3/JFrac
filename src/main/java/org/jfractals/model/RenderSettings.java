@@ -5,6 +5,7 @@ import java.util.Objects;
 /** Immutable snapshot of the parameters needed for one render. */
 public record RenderSettings(
         FractalType type,
+        ComputeBackend backend,
         int maxIterations,
         double escapeRadius,
         boolean smooth,
@@ -14,6 +15,7 @@ public record RenderSettings(
 
     public RenderSettings {
         Objects.requireNonNull(type, "type");
+        Objects.requireNonNull(backend, "backend");
         if (maxIterations < 1) {
             throw new IllegalArgumentException("Maximum iterations must be positive");
         }

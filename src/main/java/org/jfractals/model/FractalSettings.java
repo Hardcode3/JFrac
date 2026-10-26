@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 /** Mutable JavaFX model for the settings edited by the user. */
 public final class FractalSettings {
     private final ObjectProperty<FractalType> type = new SimpleObjectProperty<>(this, "type", FractalType.MANDELBROT);
+    private final ObjectProperty<ComputeBackend> backend = new SimpleObjectProperty<>(this, "backend", ComputeBackend.CPU);
     private final IntegerProperty maxIterations = new SimpleIntegerProperty(this, "maxIterations", 18);
     private final DoubleProperty escapeRadius = new SimpleDoubleProperty(this, "escapeRadius", 2.0);
     private final BooleanProperty smooth = new SimpleBooleanProperty(this, "smooth", true);
@@ -31,6 +32,18 @@ public final class FractalSettings {
 
     public ObjectProperty<FractalType> typeProperty() {
         return type;
+    }
+
+    public ComputeBackend getBackend() {
+        return backend.get();
+    }
+
+    public void setBackend(ComputeBackend backend) {
+        this.backend.set(backend);
+    }
+
+    public ObjectProperty<ComputeBackend> backendProperty() {
+        return backend;
     }
 
     public int getMaxIterations() {
@@ -108,7 +121,7 @@ public final class FractalSettings {
     /** Lets the UI schedule an update when any setting changes. */
     public void addListener(InvalidationListener listener) {
         Observable[] properties = {
-                type, maxIterations, escapeRadius, smooth, exponent, juliaReal, juliaImag
+                type, backend, maxIterations, escapeRadius, smooth, exponent, juliaReal, juliaImag
         };
         for (Observable property : properties) {
             property.addListener(listener);
@@ -117,7 +130,7 @@ public final class FractalSettings {
 
     /** Copies UI state into an immutable value safe to pass to a renderer. */
     public RenderSettings snapshot() {
-        return new RenderSettings(getType(), getMaxIterations(), getEscapeRadius(), isSmooth(),
+        return new RenderSettings(getType(), getBackend(), getMaxIterations(), getEscapeRadius(), isSmooth(),
                 getExponent(), getJuliaReal(), getJuliaImag());
     }
 }

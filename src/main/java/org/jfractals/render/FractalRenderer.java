@@ -5,12 +5,29 @@ import org.jfractals.fractal.Mandelbrot;
 import org.jfractals.model.FractalType;
 import org.jfractals.model.RenderSettings;
 
+import java.math.BigDecimal;
 import java.util.concurrent.CancellationException;
 import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 
 /** Computes an image's pixels without depending on JavaFX or UI state. */
 public final class FractalRenderer {
+    public static boolean requiresHighPrecision(int width, int height, BigDecimal viewHeight,
+                                                BigDecimal centerX, BigDecimal centerY) {
+        if (width <= 0 || height <= 0) {
+            return false;
+        }
+        double centerReal = centerX.doubleValue();
+        double centerImaginary = centerY.doubleValue();
+        double pixelStep = viewHeight.doubleValue() / Math.max(width, height);
+        if (!Double.isFinite(centerReal) || !Double.isFinite(centerImaginary)
+                || !Double.isFinite(pixelStep) || pixelStep <= 0.0) {
+            return true;
+        }
+        double coordinateUlp = Math.max(Math.ulp(centerReal), Math.ulp(centerImaginary));
+        return pixelStep < coordinateUlp * 8.0;
+    }
+
     /**
      * Returns an opaque grayscale ARGB pixel array in row-major order.
      * This method may run on a background thread.
@@ -59,7 +76,7 @@ public final class FractalRenderer {
         return pixels;
     }
 
-    private static int grayscale(double iterations, int maxIterations) {
+    static int grayscale(double iterations, int maxIterations) {
         double normalized = iterations / maxIterations;
         if (!Double.isFinite(normalized) || normalized < 0.0) {
             normalized = 0.0;

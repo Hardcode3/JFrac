@@ -17,18 +17,20 @@
         </columnConstraints>
         <Label text="Fractal" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <ComboBox fx:id="typeChoice" maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-        <Label text="Maximum iterations" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <Spinner fx:id="maxIterationsSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-        <Label text="Escape radius" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <Spinner fx:id="escapeRadiusSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-        <Label text="Smooth coloring" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <CheckBox fx:id="smoothCheckBox" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-        <Label text="Exponent" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-        <Spinner fx:id="exponentSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-        <Label text="Julia real constant" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-        <Spinner fx:id="juliaRealSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-        <Label text="Julia imaginary constant" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-        <Spinner fx:id="juliaImagSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        <Label text="Computation" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="backendChoice" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Maximum iterations" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Spinner fx:id="maxIterationsSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Escape radius" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Spinner fx:id="escapeRadiusSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="Smooth coloring" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <CheckBox fx:id="smoothCheckBox" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <Label text="Exponent" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <Spinner fx:id="exponentSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label text="Julia real constant" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <Spinner fx:id="juliaRealSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        <Label text="Julia imaginary constant" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <Spinner fx:id="juliaImagSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
     </GridPane>
-    <Label text="Settings apply as you change them." wrapText="true" textFill="#666666"/>
+    <Label text="Settings apply as you change them. Deep zooms use arbitrary-precision CPU calculations. GPU mode requires OpenCL FP64 support and may be slower on some graphics cards." wrapText="true" textFill="#666666"/>
 </VBox>

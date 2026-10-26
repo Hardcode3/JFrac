@@ -1,9 +1,8 @@
-module org.example.jfractals {
+module org.jfractals {
     requires javafx.controls;
     requires javafx.fxml;
     requires commons.math3;
 
-
-    opens org.example.jfractals to javafx.fxml;
-    exports org.example.jfractals;
+    opens org.jfractals.ui to javafx.fxml;
+    exports org.jfractals.app;
 }

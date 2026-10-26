@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="fractalPane"
+           fx:controller="org.jfractals.ui.FractalController"
+           xmlns:fx="http://javafx.com/fxml"
+           minHeight="100" minWidth="100">
+    <ImageView fx:id="fractalImageView" preserveRatio="false"/>
+</StackPane>

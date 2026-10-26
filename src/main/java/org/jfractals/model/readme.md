@@ -1,0 +1,1 @@
+Settings and immutable render configuration

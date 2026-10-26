@@ -1,0 +1,1 @@
+Pixel rendering and background render scheduling

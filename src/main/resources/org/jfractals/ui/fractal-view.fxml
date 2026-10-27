@@ -11,7 +11,9 @@
            xmlns:fx="http://javafx.com/fxml"
            minHeight="100" minWidth="100">
 
-    <ImageView fx:id="fractalImageView" preserveRatio="false" />
+    <ImageView fx:id="fractalImageView"/>
+
+    <Label fx:id="cursorCoordLabel" mouseTransparent="true" style="-fx-font-size: 10; -fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.6); -fx-padding: 1 1 1 1; -fx-background-radius: 4;" />
 
     <Pane fx:id="axisOverlayPane" mouseTransparent="true" />
 

@@ -80,8 +80,9 @@ public final class FractalController implements AutoCloseable {
 
         fractalPane.setOnMouseMoved(event -> updateCursorCoordinateTip(event.getX(), event.getY()));
         fractalPane.setOnMouseExited(event -> {
-            if (coordinateInfoLabel == null) return;
-            cursorCoordLabel.setVisible(false);
+            if (cursorCoordLabel != null) {
+                cursorCoordLabel.setVisible(false);
+            }
         });
         fractalPane.setOnMousePressed(event -> {
             pressX = event.getX();
@@ -100,9 +101,6 @@ public final class FractalController implements AutoCloseable {
         });
         fractalPane.setOnMouseReleased(event -> finishPan(event.getX(), event.getY()));
         fractalPane.setOnScroll(event -> zoomAt(event.getX(), event.getY(), event.getDeltaY()));
-
-        updateInfoLabels();
-        updateScaleBar();
     }
 
     public void updateInfoLabels() {
@@ -168,16 +166,16 @@ public final class FractalController implements AutoCloseable {
         final double AXIS_STROKE_WIDTH_PX = 2.0;
         final Color AXIS_COLOR = Color.GRAY;
         if (originScreenX >= 0 && originScreenX <= width) {
-            Line yaxis = new Line(originScreenX, 0, originScreenX, height);
-            yaxis.setStroke(AXIS_COLOR);
-            yaxis.setStrokeWidth(AXIS_STROKE_WIDTH_PX);
-            axisOverlayPane.getChildren().add(yaxis);
+            Line yAxis = new Line(originScreenX, 0, originScreenX, height);
+            yAxis.setStroke(AXIS_COLOR);
+            yAxis.setStrokeWidth(AXIS_STROKE_WIDTH_PX);
+            axisOverlayPane.getChildren().add(yAxis);
         }
         if (originScreenY >= 0 && originScreenY <= height) {
-            Line xaxis = new Line(0, originScreenY, width, originScreenY);
-            xaxis.setStroke(AXIS_COLOR);
-            xaxis.setStrokeWidth(AXIS_STROKE_WIDTH_PX);
-            axisOverlayPane.getChildren().add(xaxis);
+            Line xAxis = new Line(0, originScreenY, width, originScreenY);
+            xAxis.setStroke(AXIS_COLOR);
+            xAxis.setStrokeWidth(AXIS_STROKE_WIDTH_PX);
+            axisOverlayPane.getChildren().add(xAxis);
         }
     }
 

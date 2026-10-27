@@ -11,8 +11,8 @@ import org.jfractals.ui.FractalController;
 
 /** Creates and owns the primary application window. */
 public final class JFractalsApplication extends Application {
-    private static final double INITIAL_WIDTH = 1280;
-    private static final double INITIAL_HEIGHT = 720;
+    private static final double INITIAL_WIDTH = 720;
+    private static final double INITIAL_HEIGHT = 480;
     private static final String TITLE = "JFractals";
 
     private FractalController fractalController;

@@ -13,7 +13,7 @@
 
     <ImageView fx:id="fractalImageView" preserveRatio="false" />
 
-    <Pane fx:id="axisOverlayPane" mouseTransparent="true">
+    <Pane fx:id="axisOverlayPane" mouseTransparent="true" />
 
     <VBox alignment="BOTTOM_LEFT" mouseTransparent="true" style="-fx-padding: 10;">
         <Label fx:id="coordinateInfoLabel" style="-fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.6); -fx-padding: 5 8 5 8; -fx-background-radius: 4;"/>

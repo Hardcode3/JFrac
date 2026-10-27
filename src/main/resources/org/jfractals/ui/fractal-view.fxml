@@ -2,6 +2,7 @@
 
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
 
@@ -12,9 +13,12 @@
 
     <ImageView fx:id="fractalImageView" preserveRatio="false" />
 
+    <Pane fx:id="axisOverlayPane" mouseTransparent="true">
+
     <VBox alignment="BOTTOM_LEFT" mouseTransparent="true" style="-fx-padding: 10;">
         <Label fx:id="coordinateInfoLabel" style="-fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.6); -fx-padding: 5 8 5 8; -fx-background-radius: 4;"/>
     </VBox>
+
     <VBox alignment="BOTTOM_RIGHT" mouseTransparent="true" style="-fx-padding: 15; -fx-spacing: 2;">
         <Label fx:id="scaleLabel" style="-fx-text-fill: white; -fx-font-size: 11px; -fx-background-color: rgba(0, 0, 0, 0.6); -fx-padding: 2 4 2 4; -fx-background-radius: 3;" />
         <Pane fx:id="scaleBarLine" style="-fx-background-color: white; -fx-min-height: 2px; -fx-pref-height: 2px;" />

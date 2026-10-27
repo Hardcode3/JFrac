@@ -1,16 +1,20 @@
 package org.jfractals.ui;
 
 import javafx.animation.PauseTransition;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import javafx.scene.control.Label;
 import org.jfractals.model.FractalSettings;
@@ -34,6 +38,8 @@ public final class FractalController implements AutoCloseable {
     @FXML private Label coordinateInfoLabel;
     @FXML private Label scaleLabel;
     @FXML private Pane scaleBarLine;
+    @FXML private Pane axisOverlayPane;
+    @FXML private Label cursorCoordLabel;
 
     /** Mutable model containing the current rendering and fractal parameters. */
     private final FractalSettings settings = new FractalSettings();
@@ -67,13 +73,28 @@ public final class FractalController implements AutoCloseable {
         fractalPane.heightProperty().addListener(observable -> scheduleRender());
         settings.addListener(observable -> scheduleRender());
 
+        fractalPane.widthProperty().addListener(observable -> updateAxisOverlay());
+        fractalPane.heightProperty().addListener(observable -> updateAxisOverlay());
+
+        fractalPane.setOnMouseMoved(event -> updateCursorCoordinateTip(event.getX(), event.getY()));
+        fractalPane.setOnMouseExited(event -> {
+            if (coordinateInfoLabel == null) return;
+            cursorCoordLabel.setVisible(false);
+        });
         fractalPane.setOnMousePressed(event -> {
             pressX = event.getX();
             pressY = event.getY();
         });
         fractalPane.setOnMouseDragged(event -> {
-            fractalImageView.setTranslateX(event.getX() - pressX);
-            fractalImageView.setTranslateY(event.getY() - pressY);
+            double dx = event.getX() - pressX;
+            double dy = event.getY() - pressY;
+            fractalImageView.setTranslateX(dx);
+            fractalImageView.setTranslateY(dy);
+            ObservableList<Node> axis = axisOverlayPane.getChildren();
+            for (Node n: axis) {
+                n.setTranslateX(dx);
+                n.setTranslateY(dy);
+            }
         });
         fractalPane.setOnMouseReleased(event -> finishPan(event.getX(), event.getY()));
         fractalPane.setOnScroll(event -> zoomAt(event.getX(), event.getY(), event.getDeltaY()));
@@ -127,6 +148,63 @@ public final class FractalController implements AutoCloseable {
             // Automatically switch to scientific notation for deep zooms
             return String.format("%.0e units", units);
         }
+    }
+
+    public void updateAxisOverlay() {
+        if (axisOverlayPane == null) return;
+
+        double width = fractalPane.getWidth();
+        double height = fractalPane.getHeight();
+        if (width <= 0 || height <= 0) return;
+
+        axisOverlayPane.getChildren().clear();
+
+        double unitsPerPixel = viewHeight / height;
+        double originScreenX = (width / 2.0) - centerX / unitsPerPixel;
+        double originScreenY = (height / 2.0) - centerY / unitsPerPixel;
+
+        final double AXIS_STROKE_WIDTH_PX = 2.0;
+        final Color AXIS_COLOR = Color.GRAY;
+        if (originScreenX >= 0 && originScreenX <= width) {
+            Line yaxis = new Line(originScreenX, 0, originScreenX, height);
+            yaxis.setStroke(AXIS_COLOR);
+            yaxis.setStrokeWidth(AXIS_STROKE_WIDTH_PX);
+            axisOverlayPane.getChildren().add(yaxis);
+        }
+        if (originScreenY >= 0 && originScreenY <= height) {
+            Line xaxis = new Line(0, originScreenY, width, originScreenY);
+            xaxis.setStroke(AXIS_COLOR);
+            xaxis.setStrokeWidth(AXIS_STROKE_WIDTH_PX);
+            axisOverlayPane.getChildren().add(xaxis);
+        }
+    }
+
+    private void updateCursorCoordinateTip(double mouseX, double mouseY) {
+        if (cursorCoordLabel == null) return;
+
+        double width = fractalPane.getWidth();
+        double height = fractalPane.getHeight();
+        if (width <= 0 || height <= 0) return;
+
+        double unitsPerPixel = viewHeight / height;
+        double cursorXCp = centerX + (mouseX - (width / 2.0)) * unitsPerPixel;
+        double cursorYCp = centerY + (mouseY - (height / 2.0)) * unitsPerPixel;
+        String text = String.format("(%.6f,%.6fi)", cursorXCp, cursorYCp);
+        cursorCoordLabel.setText(text);
+        cursorCoordLabel.setVisible(true);
+
+        final double LABEL_OFFSET_X = 60;
+        final double LABEL_OFFSET_Y = -10;
+        /*
+        This is a tricky conversion.
+        Pane origin is at the center of the pane. x-axis points east and y-axis points south.
+        Mouse origin is top left corner of the window. Axis point in the same direction than the Pane.
+        Therefore the (-);
+        */
+        double labelX = mouseX - (width / 2.0) + LABEL_OFFSET_X;
+        double labelY = mouseY - (height / 2.0) + LABEL_OFFSET_Y;
+        cursorCoordLabel.setTranslateX(labelX);
+        cursorCoordLabel.setTranslateY(labelY);
     }
 
     /**
@@ -255,6 +333,7 @@ public final class FractalController implements AutoCloseable {
         if (width <= 0 || height <= 0) {
             return;
         }
+        updateAxisOverlay();
         updateInfoLabels();
         updateScaleBar();
         renderService.render(width, height, viewHeight, centerX, centerY, settings.snapshot(),

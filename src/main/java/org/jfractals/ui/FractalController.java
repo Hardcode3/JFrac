@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -31,6 +32,8 @@ public final class FractalController implements AutoCloseable {
     @FXML private StackPane fractalPane;
     @FXML private ImageView fractalImageView;
     @FXML private Label coordinateInfoLabel;
+    @FXML private Label scaleLabel;
+    @FXML private Pane scaleBarLine;
 
     /** Mutable model containing the current rendering and fractal parameters. */
     private final FractalSettings settings = new FractalSettings();
@@ -76,6 +79,7 @@ public final class FractalController implements AutoCloseable {
         fractalPane.setOnScroll(event -> zoomAt(event.getX(), event.getY(), event.getDeltaY()));
 
         updateInfoLabels();
+        updateScaleBar();
     }
 
     public void updateInfoLabels() {
@@ -83,6 +87,46 @@ public final class FractalController implements AutoCloseable {
         double zoomFactor = INITIAL_VIEW_HEIGHT / viewHeight;
         String text = String.format("Zoom: %.2fx \t Center: %.6f %+.6fi", zoomFactor, centerX, centerY);
         coordinateInfoLabel.setText(text);
+    }
+
+    public void updateScaleBar() {
+        if (scaleLabel == null || scaleBarLine == null) return;
+        double height = fractalPane.getHeight();
+        if (height <= 0.0) return;
+
+        double unitsPerPixel = viewHeight / height;
+        final double SCALEBAR_WIDTH_PX = 150;
+        double scaleBarWidthInComplexUnits = SCALEBAR_WIDTH_PX * unitsPerPixel;
+        double scaleBarWidthRoundedComplexUnits = roundToNiceNumber(scaleBarWidthInComplexUnits);
+        double scaleBarWidthNiceUnitsPx = scaleBarWidthRoundedComplexUnits / unitsPerPixel;
+
+        scaleBarLine.setPrefWidth(scaleBarWidthNiceUnitsPx);
+        scaleBarLine.setMaxWidth(scaleBarWidthNiceUnitsPx);
+        scaleLabel.setText(formatScaleText(scaleBarWidthRoundedComplexUnits));
+    }
+
+    /** Rounds a number to a clean, human-readable increment (1, 2, 5 * 10^n). */
+    private double roundToNiceNumber(double number) {
+        double exponent = Math.floor(Math.log10(number));
+        double fraction = number / Math.pow(10, exponent);
+        double niceFraction;
+
+        if (fraction <= 1.0) niceFraction = 1.0;
+        else if (fraction <= 2.0) niceFraction = 2.0;
+        else if (fraction <= 5.0) niceFraction = 5.0;
+        else niceFraction = 10.0;
+
+        return niceFraction * Math.pow(10, exponent);
+    }
+
+    /** Formats the scale value nicely, using scientific notation for very small values. */
+    private String formatScaleText(double units) {
+        if (units >= 1.0) {
+            return String.format("%.1f units", units);
+        } else {
+            // Automatically switch to scientific notation for deep zooms
+            return String.format("%.0e units", units);
+        }
     }
 
     /**
@@ -212,6 +256,7 @@ public final class FractalController implements AutoCloseable {
             return;
         }
         updateInfoLabels();
+        updateScaleBar();
         renderService.render(width, height, viewHeight, centerX, centerY, settings.snapshot(),
                 fractalImageView::setImage);
     }

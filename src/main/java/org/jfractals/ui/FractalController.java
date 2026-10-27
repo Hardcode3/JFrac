@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -16,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
+import java.util.function.Consumer;
 import javafx.scene.control.Label;
 import org.jfractals.model.FractalSettings;
 import org.jfractals.render.FractalRenderService;
@@ -234,6 +236,18 @@ public final class FractalController implements AutoCloseable {
         event.consume();
     }
 
+    private void resetTranslations() {
+        fractalImageView.setTranslateX(0.0);
+        fractalImageView.setTranslateY(0.0);
+        if (axisOverlayPane != null){
+            for (Node n : axisOverlayPane.getChildren()) {
+                n.setTranslateX(0);
+                n.setTranslateY(0);
+            }
+        }
+
+    }
+
     /**
      * Finalizes a panning gesture by translating screen coordinates into complex plane offsets,
      * resetting image view translations, and triggering a fresh render.
@@ -245,16 +259,21 @@ public final class FractalController implements AutoCloseable {
         double deltaX = x - pressX;
         double deltaY = y - pressY;
         if ((deltaX == 0.0 && deltaY == 0.0) || fractalPane.getHeight() <= 0.0) {
-            fractalImageView.setTranslateX(0.0);
-            fractalImageView.setTranslateY(0.0);
+            resetTranslations();
             return;
         }
 
         double unitsPerPixel = viewHeight / fractalPane.getHeight();
         centerX -= deltaX * unitsPerPixel;
         centerY -= deltaY * unitsPerPixel;
-        fractalImageView.setTranslateX(0.0);
-        fractalImageView.setTranslateY(0.0);
+
+        int width = (int) fractalPane.getWidth();
+        int height = (int) fractalPane.getHeight();
+        if (width <= 0 || height <= 0) {
+            resetTranslations();
+            return;
+        }
+
         render();
     }
 
@@ -333,11 +352,14 @@ public final class FractalController implements AutoCloseable {
         if (width <= 0 || height <= 0) {
             return;
         }
-        updateAxisOverlay();
         updateInfoLabels();
         updateScaleBar();
-        renderService.render(width, height, viewHeight, centerX, centerY, settings.snapshot(),
-                fractalImageView::setImage);
+        Consumer<WritableImage> onRendered = image -> {
+            fractalImageView.setImage(image);
+            resetTranslations();
+            updateAxisOverlay();
+        };
+        renderService.render(width, height, viewHeight, centerX, centerY, settings.snapshot(), onRendered);
     }
 
     /**

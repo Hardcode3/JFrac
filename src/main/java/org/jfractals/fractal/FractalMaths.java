@@ -8,8 +8,7 @@ final public class FractalMaths {
     /**
      * Applies a smoothing to the integer iteration reached by the fractal.
      * Can be used with both Mandelbrot and Julia sets.
-     *
-     * @see https://linas.org/art-gallery/escape/smooth.html
+     * See: <a href="https://linas.org/art-gallery/escape/smooth.html">...</a>
      *
      * @param iteration Iteration count reached before escaping fractal's radius for a given complex point.
      * @param magnitude Magnitude of the complex point.

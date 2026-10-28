@@ -1,0 +1,12 @@
+.overlay-label {
+    -fx-text-fill: white;
+    -fx-background-color: rgba(0, 0, 0, 0.6);
+}
+.view-info   { -fx-padding: 5 8 5 8; -fx-background-radius: 4; }
+.cursor-tip  { -fx-padding: 1;       -fx-background-radius: 4; -fx-font-size: 10; }
+.scale-label { -fx-padding: 2 4 2 4; -fx-background-radius: 3; -fx-font-size: 11px; }
+.scale-bar-line {
+    -fx-background-color: white;
+    -fx-min-height: 2px;
+    -fx-pref-height: 2px;
+}

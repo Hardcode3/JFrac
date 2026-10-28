@@ -11,9 +11,9 @@ import org.jfractals.ui.FractalController;
 
 /** Creates and owns the primary application window. */
 public final class JFractalsApplication extends Application {
-    private static final double INITIAL_WIDTH = 720;
-    private static final double INITIAL_HEIGHT = 480;
-    private static final String TITLE = "JFractals";
+    private static final double INITIAL_WIN_WIDTH_PX = 720;
+    private static final double INITIAL_WIN_HEIGHT_PX = 480;
+    private static final String WIN_TITLE = "JFractals";
 
     private FractalController fractalController;
 
@@ -24,10 +24,10 @@ public final class JFractalsApplication extends Application {
         Parent root = loader.load();
         fractalController = loader.getController();
 
-        primaryStage.setTitle(TITLE);
-        Scene scene = new Scene(root, INITIAL_WIDTH, INITIAL_HEIGHT);
+        primaryStage.setTitle(WIN_TITLE);
+        Scene scene = new Scene(root, INITIAL_WIN_WIDTH_PX, INITIAL_WIN_HEIGHT_PX);
         primaryStage.setScene(scene);
-        primaryStage.setOnShown(event -> fractalController.onViewReady(scene));
+        primaryStage.setOnShown(_ -> fractalController.onViewReady(scene));
         primaryStage.show();
     }
 

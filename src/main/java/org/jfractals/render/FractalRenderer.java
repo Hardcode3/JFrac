@@ -13,27 +13,6 @@ import java.util.stream.IntStream;
  * Supports parallel execution and cooperative cancellation.
  */
 public final class FractalRenderer {
-
-    /**
-     * Computes a pixel array in row-major order in a background thread using the
-     * current thread's interruption status as a cancellation signal.
-     *
-     * @param width Width of the fractal image in pixels.
-     * @param height Height of the fractal image in pixels.
-     * @param viewHeight Height of the fractal image in complex plane units.
-     * @param centerX Center's X coordinate of the fractal image in complex plane units.
-     * @param centerY Center's Y coordinate of the fractal image in complex plane units.
-     * @param settings Settings depicting the fractal being calculated.
-     * @return An opaque grayscale ARGB pixel array in row-major order.
-     * @throws IllegalArgumentException if dimensions or view height are invalid.
-     * @throws CancellationException if the rendering process is cancelled or interrupted.
-     */
-    public int[] render(int width, int height, double viewHeight, double centerX, double centerY,
-                        RenderSettings settings) {
-        BooleanSupplier cancelled = () -> Thread.currentThread().isInterrupted();
-        return render(width, height, viewHeight, centerX, centerY, settings, cancelled);
-    }
-
     /**
      * Computes a pixel array in row-major order in a background thread using a custom
      * cancellation supplier for cooperative aborts.
@@ -64,14 +43,14 @@ public final class FractalRenderer {
         double xMin = centerX - xRange / 2.0;
         double yMin = centerY - viewHeight / 2.0;
 
-        final int CHECK_FOR_CANCELL_EVERY_N_PIXELS = 128;
+        final int CHECK_FOR_CANCEL_EVERY_N_PIXELS = 128;
         IntStream.range(0, height).parallel().forEach(y -> {
             if (cancelled.getAsBoolean()) {
                 return;
             }
             double imaginary = yMin + (y / (double) height) * viewHeight;
             for (int x = 0; x < width; x++) {
-                if (x % CHECK_FOR_CANCELL_EVERY_N_PIXELS == 0 && cancelled.getAsBoolean()) {
+                if (x % CHECK_FOR_CANCEL_EVERY_N_PIXELS == 0 && cancelled.getAsBoolean()) {
                     return;
                 }
                 double real = xMin + (x / (double) width) * xRange;

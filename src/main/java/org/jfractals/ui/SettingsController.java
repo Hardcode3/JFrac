@@ -77,8 +77,8 @@ public final class SettingsController {
                         .toString(spinner.getValue()));
             }
         };
-        spinner.getEditor().setOnAction(event -> commit.run());
-        spinner.getEditor().focusedProperty().addListener((observable, wasFocused, isFocused) -> {
+        spinner.getEditor().setOnAction(_ -> commit.run());
+        spinner.getEditor().focusedProperty().addListener((_, _, isFocused) -> {
             if (!isFocused) {
                 commit.run();
             }

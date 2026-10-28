@@ -1,28 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
+<?import org.jfractals.ui.overlay.*?>
 
 <StackPane fx:id="fractalPane"
            fx:controller="org.jfractals.ui.FractalController"
            xmlns:fx="http://javafx.com/fxml"
+           stylesheets="@fractal-view-overlay.css"
            minHeight="100" minWidth="100">
 
     <ImageView fx:id="fractalImageView"/>
+    <AxisOverlay fx:id="axisOverlay"/>
 
-    <Label fx:id="cursorCoordLabel" mouseTransparent="true" style="-fx-font-size: 10; -fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.6); -fx-padding: 1 1 1 1; -fx-background-radius: 4;" />
+    <ViewInfoLabel fx:id="infoLabel" StackPane.alignment="BOTTOM_LEFT">
+        <StackPane.margin><Insets topRightBottomLeft="10"/></StackPane.margin>
+    </ViewInfoLabel>
 
-    <Pane fx:id="axisOverlayPane" mouseTransparent="true" />
-
-    <VBox alignment="BOTTOM_LEFT" mouseTransparent="true" style="-fx-padding: 10;">
-        <Label fx:id="coordinateInfoLabel" style="-fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.6); -fx-padding: 5 8 5 8; -fx-background-radius: 4;"/>
-    </VBox>
-
-    <VBox alignment="BOTTOM_RIGHT" mouseTransparent="true" style="-fx-padding: 15; -fx-spacing: 2;">
-        <Label fx:id="scaleLabel" style="-fx-text-fill: white; -fx-font-size: 11px; -fx-background-color: rgba(0, 0, 0, 0.6); -fx-padding: 2 4 2 4; -fx-background-radius: 3;" />
-        <Pane fx:id="scaleBarLine" style="-fx-background-color: white; -fx-min-height: 2px; -fx-pref-height: 2px;" />
-    </VBox>
+    <ScaleBar fx:id="scaleBar" StackPane.alignment="BOTTOM_RIGHT"/>
+    <CursorCoordinateTip fx:id="cursorTip" StackPane.alignment="TOP_LEFT"/>
 </StackPane>

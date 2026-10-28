@@ -84,18 +84,18 @@ public final class FractalController implements AutoCloseable {
         event.consume();
     }
 
-    private void finishPan(double dx, double dy) {
-        if (viewport.isEmpty() || (dx == 0.0 && dy == 0.0)) {
+    private void finishPan(double dxPx, double dyPx) {
+        if (viewport.isEmpty() || (dxPx == 0.0 && dyPx == 0.0)) {
             resetPan();
             return;
         }
-        viewport = viewport.panned(dx, dy);
+        viewport = viewport.panned(dxPx, dyPx);
         render();
     }
 
     private void zoomAt(double x, double y, double scrollDelta) {
         if (viewport.isEmpty() || scrollDelta == 0.0) return;
-        viewport = viewport.zoomAt(x, y, Math.exp(-scrollDelta * ZOOM_SPEED));
+        viewport = viewport.zoomedAt(x, y, Math.exp(-scrollDelta * ZOOM_SPEED));
         render();
     }
 
@@ -105,10 +105,10 @@ public final class FractalController implements AutoCloseable {
         render();
     }
 
-    private void setPanOffset(double dx, double dy) {
+    private void setPanOffset(double dxPx, double dyPx) {
         for (Node layer : panLayers) {
-            layer.setTranslateX(dx);
-            layer.setTranslateY(dy);
+            layer.setTranslateX(dxPx);
+            layer.setTranslateY(dyPx);
         }
     }
 

@@ -4,6 +4,9 @@ module org.jfractals {
     requires commons.math3;
     requires java.desktop;
 
+    // For tests;
+    requires org.junit.jupiter;
+
     opens org.jfractals.ui to javafx.fxml;
 
     exports org.jfractals.app;

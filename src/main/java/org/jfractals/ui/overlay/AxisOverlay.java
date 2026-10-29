@@ -18,13 +18,13 @@ public final class AxisOverlay extends Pane {
     }
 
     public void update(Viewport viewport) {
-        if (viewport.isEmpty()) return;
+        if (viewport.isInitial()) return;
 
         final double originXPx = viewport.toScreenX(0.0d);
-        final double originYPy = viewport.toScreenY(0.0d);
+        final double originYPx = viewport.toScreenY(0.0d);
 
-        final boolean yAxisIsInViewport = originXPx >= 0 && originYPy <= viewport.heightPx();
-        final boolean xAxisIsInViewport = originYPy >= 0 && originYPy <= viewport.widthPx();
+        final boolean yAxisIsInViewport = originXPx >= 0 && originYPx <= viewport.heightPx();
+        final boolean xAxisIsInViewport = originYPx >= 0 && originYPx <= viewport.widthPx();
 
         yAxis.setVisible(yAxisIsInViewport);
         yAxis.setStartX(originXPx);
@@ -34,9 +34,9 @@ public final class AxisOverlay extends Pane {
 
         xAxis.setVisible(xAxisIsInViewport);
         xAxis.setStartX(0.0d);
-        xAxis.setStartY(originYPy);
+        xAxis.setStartY(originYPx);
         xAxis.setEndX(viewport.widthPx());
-        xAxis.setEndY(originYPy);
+        xAxis.setEndY(originYPx);
     }
 
     private static Line newAxis() {

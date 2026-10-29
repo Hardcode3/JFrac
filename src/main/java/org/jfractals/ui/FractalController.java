@@ -85,7 +85,7 @@ public final class FractalController implements AutoCloseable {
     }
 
     private void finishPan(double dxPx, double dyPx) {
-        if (viewport.isEmpty() || (dxPx == 0.0 && dyPx == 0.0)) {
+        if (viewport.isInitial() || (dxPx == 0.0 && dyPx == 0.0)) {
             resetPan();
             return;
         }
@@ -94,8 +94,8 @@ public final class FractalController implements AutoCloseable {
     }
 
     private void zoomAt(double x, double y, double scrollDelta) {
-        if (viewport.isEmpty() || scrollDelta == 0.0) return;
-        viewport = viewport.zoomedAt(x, y, Math.exp(-scrollDelta * ZOOM_SPEED));
+        if (viewport.isInitial() || scrollDelta == 0.0) return;
+        viewport = viewport.zoomedAt(x, y, Math.exp(scrollDelta * ZOOM_SPEED));
         render();
     }
 
@@ -125,7 +125,7 @@ public final class FractalController implements AutoCloseable {
     }
 
     private void render() {
-        if (viewport.isEmpty()) return;
+        if (viewport.isInitial()) return;
         Viewport vp = viewport;
         infoLabel.update(vp);
         scaleBar.update(vp);
@@ -136,7 +136,7 @@ public final class FractalController implements AutoCloseable {
         };
         renderService.render(
                 (int) vp.widthPx(), (int) vp.heightPx(),
-                vp.viewHeightCp(),
+                vp.heightCp(),
                 vp.centerXCp(), vp.centerYCp(),
                 settings.snapshot(),
                 onRendered

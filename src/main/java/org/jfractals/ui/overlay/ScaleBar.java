@@ -30,7 +30,7 @@ public final class ScaleBar extends VBox {
     }
 
     public void update(Viewport viewport) {
-        if (viewport.isEmpty()) return;
+        if (viewport.isInitial()) return;
 
         double upp = viewport.unitsPerPixel();
         double niceUnits = roundToNiceNumber(SCALE_TARGET_WIDTH_PX * upp);
